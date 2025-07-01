@@ -19,49 +19,45 @@ const personajes = [
 ];
 
 
-// Persistencia de votos en votes.json
-const fs = require('fs');
-const VOTES_FILE = path.join(__dirname, 'votes.json');
+
+// --- MongoDB Atlas ---
+require('dotenv').config();
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = process.env.MONGODB_URI;
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
 let votos = [];
+let votosCollection;
 
-// Cargar votos desde votes.json al iniciar
-function cargarVotos() {
-    try {
-        // Verificar si el archivo existe
-        if (!fs.existsSync(VOTES_FILE)) {
-            // Si no existe, crearlo con un array vacío
-            fs.writeFileSync(VOTES_FILE, JSON.stringify([], null, 2), 'utf8');
-            votos = [];
-            return;
-        }
-        
-        // Si el archivo existe, leerlo
-        const data = fs.readFileSync(VOTES_FILE, 'utf8');
-        const json = JSON.parse(data);
-        
-        if (Array.isArray(json)) {
-            votos = json;
-        } else if (json && typeof json === 'object' && json.votos) {
-            votos = json.votos;
-        } else {
-            votos = [];
-        }
-    } catch (e) {
-        console.error('Error al cargar los votos, inicializando array vacío:', e);
-        votos = [];
-    }
+async function conectarMongo() {
+  try {
+    await client.connect();
+    const db = client.db('votacion');
+    votosCollection = db.collection('votos');
+    // Cargar votos al iniciar
+    votos = await votosCollection.find({}).toArray();
+    console.log('Conectado a MongoDB Atlas. Votos cargados:', votos.length);
+  } catch (e) {
+    console.error('Error conectando a MongoDB:', e);
+  }
 }
 
-// Guardar votos en votes.json
-function guardarVotos() {
-    try {
-        fs.writeFileSync(VOTES_FILE, JSON.stringify(votos, null, 2), 'utf8');
-    } catch (e) {
-        console.error('Error guardando votos:', e);
-    }
+async function guardarVotoMongo(voto) {
+  try {
+    await votosCollection.insertOne(voto);
+    votos.push(voto);
+  } catch (e) {
+    console.error('Error guardando voto en MongoDB:', e);
+  }
 }
 
-cargarVotos();
+conectarMongo();
 
 function asignarPersonaje() {
     // Asigna el siguiente personaje disponible
@@ -105,7 +101,7 @@ wss.on('connection', ws => {
     // Envía el estado actual de los votos al cliente recién conectado
     ws.send(JSON.stringify({ type: 'initial_votes', votos }));
 
-    ws.on('message', message => {
+    ws.on('message', async message => {
         const data = JSON.parse(message);
         if (data.type === 'vote') {
             const { id, opcion } = data;
@@ -114,8 +110,8 @@ wss.on('connection', ws => {
             // Asignar personaje
             const personaje = asignarPersonaje();
             if (!personaje) return; // No hay más personajes
-            votos.push({ id, personaje, opcion });
-            guardarVotos();
+            const voto = { id, personaje, opcion };
+            await guardarVotoMongo(voto);
             // Emitir a todos los clientes
             const allVotesIn = votos.length === personajes.length;
             wss.clients.forEach(client => {
