@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: votacion
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.x
+    build:
+      nodeVersion: 18.x
+    plan: free

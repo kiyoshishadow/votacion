@@ -1,0 +1,24 @@
+{
+  "name": "votacion",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "build": "echo \"Build complete\" && exit 0",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "render-build": "npm install && npm run build"
+  },
+  "keywords": ["voting", "real-time", "node", "express", "websocket"],
+  "author": "",
+  "license": "ISC",
+  "description": "Aplicación de votación en tiempo real",
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.18.3"
+  },
+  "engines": {
+    "node": "18.x",
+    "npm": ">=8.0.0"
+  }
+}
