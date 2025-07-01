@@ -1,16 +1,18 @@
+/* Base styles for all devices */
 body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* Changed from center to flex-start for better mobile layout */
     min-height: 100vh;
     margin: 0;
-    padding: 20px;
+    padding: 15px;
     box-sizing: border-box;
     background: url('./Img/fondo.jpg') no-repeat center center fixed;
     background-size: cover;
     background-attachment: fixed;
     position: relative;
+    overflow-x: hidden;
 }
 
 /* Add overlay to improve text visibility */
@@ -29,14 +31,16 @@ body::before {
 .voting-interface {
     position: relative;
     margin: 20px auto;
+    width: 100%;
     max-width: 900px;
-    border-radius: 30px;
+    border-radius: 20px;
     box-shadow: 0 8px 32px rgba(0,0,0,0.3);
     background: rgba(58, 94, 219, 0.85);
     backdrop-filter: blur(8px);
     border: 4px solid #f7d900;
-    padding: 25px;
+    padding: 20px 15px;
     z-index: 10;
+    box-sizing: border-box;
 }
 
 .container {
@@ -47,22 +51,76 @@ body::before {
     text-align: center;
 }
 
+/* Estilos base para la pregunta */
 .question-text {
-    font-size: 2rem;
+    font-size: 1rem; /* Tamaño de fuente más pequeño para móviles */
     font-weight: bold;
     color: #fff;
     text-align: center;
-    margin: 20px auto;
-    padding: 15px 30px;
+    margin: 8px auto 16px;
+    padding: 8px 10px;
     background: rgba(0, 0, 0, 0.6);
-    border-radius: 50px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border-radius: 10px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
     position: relative;
     z-index: 20;
-    max-width: 90%;
+    width: 100%; /* Ocupa todo el ancho disponible */
+    max-width: 95%; /* Máximo ancho del 95% para mantener márgenes */
     backdrop-filter: blur(5px);
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    line-height: 1.2;
+    word-break: break-word; /* Asegura que el texto se rompa correctamente */
+    overflow-wrap: break-word;
+    white-space: normal; /* Asegura que el texto se ajuste */
+    box-sizing: border-box;
+}
+
+/* Ajustes para pantallas pequeñas (hasta 480px) */
+@media (max-width: 480px) {
+    .question-text {
+        font-size: 0.9rem; /* Tamaño aún más pequeño para móviles muy pequeños */
+        padding: 6px 8px;
+        margin: 5px auto 10px;
+        line-height: 1.1;
+    }
+    .question-text .wave-text {
+        font-size: 1em;
+        gap: 0.03em;
+    }
+    .wave-text span {
+        font-size: 1em;
+    }
+}
+
+/* Media query para tablets */
+@media (min-width: 481px) and (max-width: 767px) {
+    .question-text {
+        font-size: 1rem;
+        padding: 8px 12px;
+        margin: 8px auto 15px;
+        line-height: 1.2;
+    }
+}
+
+/* Media query para pantallas medianas */
+@media (min-width: 768px) and (max-width: 1023px) {
+    .question-text {
+        font-size: 1.1rem;
+        padding: 10px 15px;
+        margin: 10px auto 20px;
+        line-height: 1.3;
+    }
+}
+
+/* Media query para pantallas grandes */
+@media (min-width: 1024px) {
+    .question-text {
+        font-size: 1.3rem;
+        padding: 12px 20px;
+        margin: 15px auto 25px;
+        line-height: 1.4;
+    }
 }
 
 h1 {
@@ -125,22 +183,28 @@ h1 {
 /* Voting Buttons */
 .voting-buttons {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
     margin: 20px 0;
+    padding: 0 10px;
 }
 
 .vote-btn {
-    padding: 12px 30px;
+    padding: 10px 20px;
     border: none;
     border-radius: 50px;
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
+    flex: 1;
+    max-width: 200px;
+    min-width: 120px;
 }
 
 .btn-yes {
@@ -188,16 +252,27 @@ h1 {
 #characters-container {
     position: relative;
     z-index: 1;
-    overflow: visible !important;
-    padding: 30px !important;
-    margin: -30px !important;
-    width: calc(100% + 60px) !important;
-    left: -30px;
+    overflow-x: auto;
+    padding: 15px 10px !important;
+    margin: 0 -15px !important;
+    width: calc(100% + 30px) !important;
+    left: 0;
+    display: flex;
+    flex-wrap: nowrap;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* Hide scrollbar for Webkit browsers */
+#characters-container::-webkit-scrollbar {
+    display: none;
 }
 
 .character-avatar {
     position: relative;
-    width: 90px;
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
     height: 90px;
     border-radius: 50%;
     background-size: cover;
@@ -238,8 +313,8 @@ h1 {
 /* Ensure avatar container has enough space for glow */
 .character-appear {
     position: relative;
-    padding: 15px;
-    margin: -15px;
+    padding: 10px;
+    margin: 5px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -267,6 +342,11 @@ h1 {
     display: inline-flex;
     position: relative;
     gap: 0.05em;
+    flex-wrap: wrap;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .wave-text span {
@@ -280,7 +360,12 @@ h1 {
 /* Question text specific styles */
 .question-text .wave-text {
     display: inline-flex;
+    flex-wrap: wrap;
     gap: 0.05em;
+    white-space: normal;
+    word-break: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 .vote-title-text {
